@@ -5,8 +5,8 @@ stored in a JSON file so they persist between sessions.
 
 ## Features
 
-- Interactive menu to list contacts, add a contact, and exit
-- Persistent storage: contacts are saved to a JSON file on exit
+- Interactive menu to list, search, add, and delete contacts
+- Persistent storage: every change is saved to a JSON file immediately
 - Contacts are loaded automatically when the program starts
 
 ## How to run
