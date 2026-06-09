@@ -1,5 +1,23 @@
 import json
 
+def show_contacts(contacts):
+    if contacts: 
+        for key, value in contacts.items():
+            print(f"{key} -> {value}")
+    else:
+        print("There are currently no entries in contact. Please go forward by adding some contacts!")
+
+def add_contact(contacts):
+    name = input("Please continue with a name: ")
+    number = input("Now give the name a telephon number: ")
+    contacts[name] = number
+
+def close_contacts(contacts):
+    with open("contacts.json", "w") as datei:
+        json.dump(contacts, datei)
+
+    print("Bye")
+
 try:
     with open("contacts.json", "r") as file:
         contacts = json.load(file)
@@ -14,22 +32,13 @@ while True:
     decison = input("1) List contacts\n 2) Add a contact\n 3) Leave!\n Chosse an option from 1 to 3: ")
 
     if decison == "1":
-        if contacts: 
-            for key, value in contacts.items():
-                print(f"{key} -> {value}")
-        else:
-            print("There are currently no entries in contact. Please go forward by adding some contacts!")
+        show_contacts(contacts)
 
     elif decison == "2":
-        name = input("Please continue with a name: ")
-        number = input("Now give the name a telephon number: ")
-        contacts[name] = number
+        add_contact(contacts)
+
     elif decison == "3":
-
-        with open("contacts.json", "w") as datei:
-            json.dump(contacts, datei)
-
-        print("Bye")
+        close_contacts(contacts)
         break
 
     else:
