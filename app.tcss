@@ -1,0 +1,48 @@
+/* Rosé Pine Moon
+   base #232136  surface #2a273f  highlight #44415a
+   text #e0def4  subtle #908caa
+   iris #c4a7e7  foam #9ccfd8  pine #3e8fb0  gold #f6c177 */
+
+Screen {
+    background: #232136;
+}
+
+Header {
+    background: #2a273f;
+    color: #e0def4;
+}
+
+Footer {
+    background: #2a273f;
+    color: #908caa;
+}
+
+DataTable {
+    height: 1fr;
+    margin: 1 2;
+    background: #232136;
+    color: #e0def4;
+}
+
+#add-bar {
+    height: auto;
+    padding: 1 2;
+    background: #2a273f;
+}
+
+#add-bar Input {
+    width: 1fr;
+    margin: 0 1;
+    border: round #44415a;
+}
+
+#add-bar Input:focus {
+    border: round #c4a7e7;
+}
+
+#add-bar Button {
+    width: auto;
+    margin: 0 1;
+    background: #3e8fb0;
+    color: #e0def4;
+}
