@@ -38,6 +38,8 @@ class AddressBook:
     def delete(self, name):
         if name in self.contacts:
             del self.contacts[name]
+            return True
+        return False
 
     def save(self):
         data = {}
