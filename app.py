@@ -6,6 +6,7 @@ from address_book import AddressBook
 class ContactApp(App):
     CSS_PATH = "app.tcss"
     TITLE = "Contacts"
+    SUB_TITLE = "AddressBook v1"
 
     BINDINGS = [
         ("q", "quit", "Quit"),
@@ -17,7 +18,7 @@ class ContactApp(App):
         self.book = AddressBook()
 
     def compose(self) -> ComposeResult:
-        yield Header(show_clock=True)
+        yield Header()
         yield DataTable()
         with Horizontal(id="add-bar"):
             yield Input(placeholder="Name", id="name")
@@ -28,11 +29,15 @@ class ContactApp(App):
 
     def on_mount(self) -> None:
         table = self.query_one(DataTable)
-        table.add_columns("Name", "Number", "Email")
+        table.add_column("Name", width=28)
+        table.add_column("Number", width=22)
+        table.add_column("Email", width=36)
         for contact in self.book.contacts.values():
             table.add_row(contact.name, contact.number, contact.email, key=contact.name)
         table.cursor_type = "row"
         table.zebra_stripes = True
+        table.border_title = "◆ CONTACTS"
+        self.query_one("#add-bar").border_title = "◆ NEW ENTRY"
         self.styles.opacity = 0.0
         self.styles.animate("opacity", value=1.0, duration=0.5)
 

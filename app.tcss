@@ -1,7 +1,7 @@
-/* Rosé Pine Moon
+/* Rosé Pine Moon — Retro CRT Console
    base #232136  surface #2a273f  highlight #44415a
    text #e0def4  subtle #908caa
-   iris #c4a7e7  foam #9ccfd8  pine #3e8fb0  gold #f6c177 */
+   gold #f6c177  foam #9ccfd8  iris #c4a7e7  pine #3e8fb0 */
 
 Screen {
     background: #232136;
@@ -10,6 +10,7 @@ Screen {
 Header {
     background: #2a273f;
     color: #e0def4;
+    text-style: bold;
 }
 
 Footer {
@@ -20,29 +21,59 @@ Footer {
 DataTable {
     height: 1fr;
     margin: 1 2;
+    padding: 0 1;
     background: #232136;
     color: #e0def4;
+    border: double #f6c177;
+    border-title-align: center;
+}
+
+DataTable > .datatable--header {
+    background: #2a273f;
+    color: #e0def4;
+    text-style: bold;
+}
+
+DataTable > .datatable--cursor {
+    background: #f6c177;
+    color: #232136;
+}
+
+DataTable > .datatable--odd-row {
+    background: #2a273f;
+}
+
+DataTable > .datatable--even-row {
+    background: #232136;
 }
 
 #add-bar {
     height: auto;
+    margin: 0 2 1 2;
     padding: 1 2;
-    background: #2a273f;
+    background: #232136;
+    border: double #9ccfd8;
+    border-title-align: center;
 }
 
 #add-bar Input {
     width: 1fr;
     margin: 0 1;
+    background: #2a273f;
+    color: #e0def4;
     border: round #44415a;
 }
 
 #add-bar Input:focus {
-    border: round #c4a7e7;
+    border: round #9ccfd8;
 }
 
 #add-bar Button {
     width: auto;
+    height: 3;
     margin: 0 1;
-    background: #3e8fb0;
-    color: #e0def4;
+    background: #9ccfd8;
+    color: #232136;
+    text-style: bold;
+    border: none;
 }
