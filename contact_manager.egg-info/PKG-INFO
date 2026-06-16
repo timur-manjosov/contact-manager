@@ -1,6 +1,0 @@
-Metadata-Version: 2.4
-Name: contact-manager
-Version: 1.0.0
-Summary: A keyboard-driven contact manager built with Textual
-Requires-Python: >=3.9
-Requires-Dist: textual
