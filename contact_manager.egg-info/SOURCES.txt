@@ -1,0 +1,10 @@
+README.md
+address_book.py
+app.py
+pyproject.toml
+contact_manager.egg-info/PKG-INFO
+contact_manager.egg-info/SOURCES.txt
+contact_manager.egg-info/dependency_links.txt
+contact_manager.egg-info/entry_points.txt
+contact_manager.egg-info/requires.txt
+contact_manager.egg-info/top_level.txt

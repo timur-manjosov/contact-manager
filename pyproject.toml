@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "contact-manager"
+version = "1.0.0"
+description = "A keyboard-driven contact manager built with Textual"
+requires-python = ">=3.9"
+dependencies = ["textual"]
+
+[project.scripts]
+contacts = "app:main"
+
+[tool.setuptools]
+py-modules = ["app", "address_book"]

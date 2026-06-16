@@ -67,6 +67,8 @@ class ContactApp(App):
         self.notify(f"Added {name}", severity="information")
 
 
+def main():
+    ContactApp().run()
+
 if __name__ == "__main__":
-    app = ContactApp()
-    app.run()
+    main()
