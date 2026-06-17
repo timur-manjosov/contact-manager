@@ -26,7 +26,7 @@ class AddressBook:
             self.contacts = {}
             for key, value in raw.items():
                 self.contacts[key] = Contact(value["name"], value["number"], value["email"])
-        except FileNotFoundError:
+        except (FileNotFoundError, json.JSONDecodeError):
             self.contacts = {} 
 
     def find(self, name):

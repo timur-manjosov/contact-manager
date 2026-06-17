@@ -32,8 +32,10 @@ class ContactApp(App):
         table.add_column("Name", width=28)
         table.add_column("Number", width=22)
         table.add_column("Email", width=36)
+
         for contact in self.book.contacts.values():
             table.add_row(contact.name, contact.number, contact.email, key=contact.name)
+
         table.cursor_type = "row"
         table.zebra_stripes = True
         table.border_title = "◆ CONTACTS"
@@ -43,6 +45,10 @@ class ContactApp(App):
 
     def action_delete_contact(self) -> None:
         table = self.query_one(DataTable)
+
+        if table.row_count == 0:
+            return
+
         row_key, _ = table.coordinate_to_cell_key(table.cursor_coordinate)
         name = row_key.value
         self.book.delete(name)
@@ -54,6 +60,18 @@ class ContactApp(App):
         name = self.query_one("#name", Input).value
         number = self.query_one("#number", Input).value
         email = self.query_one("#email", Input).value
+
+        if not name:
+            self.notify("Please give a name", severity="error")
+            return
+
+        if not number:
+            self.notify("You can not continue without a number", severity="error")
+            return
+
+        if name in self.book.contacts:
+            self.notify("The name already exists in the book. Continue with a other name!", severity="error")
+            return
 
         self.book.add(name, number, email)
         self.book.save()
