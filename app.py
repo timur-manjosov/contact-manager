@@ -3,6 +3,7 @@ from textual.widgets import Header, Footer, DataTable, Input, Button
 from textual.containers import Horizontal
 from address_book import AddressBook
 
+
 class ContactApp(App):
     CSS_PATH = "app.tcss"
     TITLE = "Contacts"
@@ -87,6 +88,7 @@ class ContactApp(App):
 
 def main():
     ContactApp().run()
+
 
 if __name__ == "__main__":
     main()

@@ -21,13 +21,15 @@ class AddressBook:
 
     def load(self):
         try:
-            with open("contacts.json", "r") as file:
+            with open("contacts.json") as file:
                 raw = json.load(file)
-            self.contacts = {}
-            for key, value in raw.items():
-                self.contacts[key] = Contact(value["name"], value["number"], value["email"])
+            self.contacts = {
+                name: Contact(entry["name"], entry["number"], entry["email"])
+                for name, entry in raw.items()
+            }
+        # A missing or corrupt file just means we start with an empty book.
         except (FileNotFoundError, json.JSONDecodeError):
-            self.contacts = {} 
+            self.contacts = {}
 
     def find(self, name):
         return self.contacts.get(name)
@@ -42,9 +44,7 @@ class AddressBook:
         return False
 
     def save(self):
-        data = {}
-        for key, value in self.contacts.items():
-            data[key] = value.to_dict()
-        with open("contacts.json", "w") as datei:
-            json.dump(data, datei)
+        data = {name: contact.to_dict() for name, contact in self.contacts.items()}
+        with open("contacts.json", "w") as file:
+            json.dump(data, file)
 
