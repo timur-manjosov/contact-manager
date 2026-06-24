@@ -4,7 +4,7 @@
 
 **A fast, keyboard-driven contact manager for your terminal.**
 
-Built in Python with [Textual](https://textual.textualize.io/), wrapped in a retro Rosé Pine Moon theme.
+Built in Python with [Textual](https://textual.textualize.io/) — a clean master/detail interface in a Rosé Pine Moon theme.
 
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Built with Textual](https://img.shields.io/badge/built%20with-Textual-5a4fcf.svg)](https://textual.textualize.io/)
@@ -19,10 +19,12 @@ Built in Python with [Textual](https://textual.textualize.io/), wrapped in a ret
 ## Overview
 
 Contact Manager is a small but complete TUI (terminal user interface) application
-for keeping track of names, phone numbers and e-mail addresses — entirely from the
-keyboard. It is also a deliberately clean reference for **layered application design
-in Python**: the user interface, business rules and storage are fully decoupled, so
-each can be understood, tested or replaced on its own.
+for keeping track of the people you know — entirely from the keyboard. A sidebar
+list pairs with a rich detail card so each contact reads like a person (initials
+avatar, role, tags, notes, favorites) rather than a row in a database. It is also
+a deliberately clean reference for **layered application design in Python**: the
+user interface, business rules and storage are fully decoupled, so each can be
+understood, tested or replaced on its own.
 
 > [!NOTE]
 > The UI never touches the database and the database never knows about the UI.
@@ -33,13 +35,17 @@ each can be understood, tested or replaced on its own.
 
 | Feature | Description |
 | --- | --- |
-| 📇 **Browse** | View all contacts in a scrollable, zebra-striped table. |
-| ➕ **Add** | Enter a name, number and e-mail inline, then press **Add** or `Enter`. |
-| 🗑️ **Delete** | Remove the selected contact with a single `d` keystroke. |
-| ⌨️ **Keyboard-first** | Navigate, add and delete without ever reaching for the mouse. |
-| ✅ **Validated input** | Names and numbers are required; e-mail format is checked. |
+| 📇 **Master / detail** | A sidebar list on the left, a rich profile card on the right. |
+| 👤 **Rich contacts** | Phone, e-mail, company, title, location, website, birthday, tags and notes. |
+| 🅰️ **Initials avatars** | Each contact gets a stable, colour-coded avatar from their initials. |
+| ⭐ **Favorites** | Pin the people you reach for most with `f`. |
+| 🏷️ **Tags** | Group contacts with lightweight, free-form labels. |
+| ➕ **Add** | A focused modal form (`a`) creates a contact; validation errors show inline. |
+| 🗑️ **Delete** | Remove the highlighted contact with a single `d` keystroke. |
+| ⌨️ **Keyboard-first** | Browse, add, favorite and delete without ever reaching for the mouse. |
+| ✅ **Validated input** | Names and numbers are required; e-mail, website and birthday are format-checked. |
 | 💾 **Safe persistence** | Changes are written atomically to JSON — no half-saved files. |
-| 🎨 **Themed** | Retro-console styling using the Rosé Pine Moon palette. |
+| 🎨 **Themed** | Quiet, intentional styling using the Rosé Pine Moon palette. |
 
 ## Screenshots
 
@@ -77,9 +83,10 @@ contacts
 python -m contact_manager
 ```
 
-To add a contact, fill in the **Name**, **Number** and **Email** fields at the
-bottom of the screen and press **Add** (or `Enter`). Contacts are saved to
-`contacts.json` in the current working directory.
+Browse with `↑` / `↓` — the detail card updates as you move. Press `a` to open
+the new-contact form, fill in the fields (only **Name** and **Phone** are
+required) and press `Enter` to save. Pin a contact with `f` and remove one with
+`d`. Contacts are saved to `contacts.json` in the current working directory.
 
 > [!TIP]
 > Point the app at a different data file with the `CONTACTS_FILE` environment
@@ -90,8 +97,11 @@ bottom of the screen and press **Add** (or `Enter`). Contacts are saved to
 | Key | Action |
 | --- | --- |
 | `↑` / `↓` | Move between contacts |
-| `Enter` | Add the contact in the input fields |
-| `d` | Delete the selected contact |
+| `a` | Add a contact (opens the form) |
+| `f` | Toggle the highlighted contact as a favorite |
+| `d` | Delete the highlighted contact |
+| `Enter` | Save the contact (in the add form) / `Esc` to cancel |
+| `Ctrl` + `p` | Command palette |
 | `q` | Quit |
 
 ## Architecture
@@ -138,7 +148,7 @@ contact-manager/
 │       ├── models/             # Contact dataclass
 │       ├── repositories/       # ContactRepository + JSON implementation
 │       ├── services/           # ContactService (business logic)
-│       ├── ui/                 # Textual app + styles.tcss
+│       ├── ui/                 # Textual app, widgets, modal screens + styles.tcss
 │       ├── config/             # Settings resolution
 │       └── utils/              # Field validators
 ├── tests/                      # pytest suite (unit + UI integration)
@@ -179,11 +189,11 @@ pytest tests/test_contact_service.py   # one module
 
 ## Roadmap
 
-- [ ] Edit / rename existing contacts (currently delete-and-re-add).
-- [ ] Live search & filtering across the table.
+- [x] Per-contact detail view with notes, tags and favorites.
+- [ ] Live search & filtering (by name, company, tag) in the sidebar.
+- [ ] Edit existing contacts (currently delete-and-re-add).
 - [ ] Pluggable SQLite backend behind the existing repository interface.
 - [ ] Import / export (CSV, vCard).
-- [ ] Per-contact detail view with notes and tags.
 - [ ] Configurable themes.
 
 ## Contributing

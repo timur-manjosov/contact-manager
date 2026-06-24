@@ -24,6 +24,76 @@ def test_add_normalises_and_persists(
     assert ContactService(repository).get("Ada") == contact
 
 
+def test_add_accepts_and_normalises_rich_fields(
+    service: ContactService, repository: JsonContactRepository
+) -> None:
+    contact = service.add(
+        "Grace Hopper",
+        "+1 202 555 0143",
+        company="US Navy",
+        title="Rear Admiral",
+        birthday="12-09",
+        tags="Work, legends, work",
+        favorite=True,
+    )
+
+    assert contact.company == "US Navy"
+    assert contact.tags == ("work", "legends")
+    assert contact.favorite is True
+    assert contact.updated_at  # stamped on creation
+    # Rich fields survive a round trip through the repository.
+    assert ContactService(repository).get("Grace Hopper") == contact
+
+
+def test_add_rejects_invalid_rich_field(service: ContactService) -> None:
+    with pytest.raises(ValidationError):
+        service.add("Ada", "12345", birthday="02-30")
+
+
+def test_update_changes_fields_and_restamps(service: ContactService) -> None:
+    original = service.add("Ada", "12345")
+    updated = service.update("Ada", company="Analytical Engine Co", tags="math, work")
+
+    assert updated.company == "Analytical Engine Co"
+    assert updated.tags == ("math", "work")
+    assert updated.name == "Ada"  # key is unchanged
+    assert updated.updated_at >= original.updated_at
+
+
+def test_update_persists(
+    service: ContactService, repository: JsonContactRepository
+) -> None:
+    service.add("Ada", "12345")
+    service.update("Ada", email="ada@example.com")
+    assert ContactService(repository).get("Ada").email == "ada@example.com"
+
+
+def test_update_validates(service: ContactService) -> None:
+    service.add("Ada", "12345")
+    with pytest.raises(ValidationError):
+        service.update("Ada", email="not-an-email")
+
+
+def test_update_rejects_unknown_field(service: ContactService) -> None:
+    service.add("Ada", "12345")
+    with pytest.raises(ValueError):
+        service.update("Ada", name="Grace")
+
+
+def test_update_unknown_contact_raises(service: ContactService) -> None:
+    with pytest.raises(ContactNotFoundError):
+        service.update("Nobody", company="Acme")
+
+
+def test_toggle_favorite_flips_and_persists(
+    service: ContactService, repository: JsonContactRepository
+) -> None:
+    service.add("Ada", "12345")
+    assert service.toggle_favorite("Ada").favorite is True
+    assert service.toggle_favorite("Ada").favorite is False
+    assert ContactService(repository).get("Ada").favorite is False
+
+
 def test_add_rejects_duplicate_names(service: ContactService) -> None:
     service.add("Ada", "12345")
     with pytest.raises(DuplicateContactError):

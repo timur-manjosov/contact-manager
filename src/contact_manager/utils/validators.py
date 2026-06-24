@@ -9,6 +9,8 @@ to unit-test and lets every layer share a single definition of "valid".
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
+from datetime import datetime
 
 from contact_manager.exceptions import ValidationError
 
@@ -71,3 +73,72 @@ def normalize_email(value: str) -> str:
     if not _EMAIL_RE.match(email):
         raise ValidationError(f"'{value}' is not a valid e-mail address.")
     return email
+
+
+def normalize_text(value: str) -> str:
+    """Return free-form optional text with surrounding whitespace trimmed.
+
+    Used for fields that have no shape to enforce — nickname, company, title,
+    location, notes. Empty is always acceptable.
+    """
+    return value.strip()
+
+
+def normalize_website(value: str) -> str:
+    """Return a trimmed website, rejecting only obvious junk.
+
+    A URL is optional and stored exactly as typed (no scheme is added or
+    stripped) so the user's preferred form survives; we merely reject values
+    containing whitespace, which can never be a single valid URL.
+    """
+    website = value.strip()
+    if not website:
+        return ""
+    if any(char.isspace() for char in website):
+        raise ValidationError(f"'{value}' is not a valid website.")
+    return website
+
+
+def normalize_birthday(value: str) -> str:
+    """Return a validated birthday, or ``""`` when not provided.
+
+    Two shapes are accepted: ``"MM-DD"`` for a recurring day with no year, and
+    full ISO ``"YYYY-MM-DD"`` when the year is known. The value is parsed to
+    guarantee a real calendar date (so ``"02-30"`` is rejected) and returned
+    unchanged on success.
+    """
+    birthday = value.strip()
+    if not birthday:
+        return ""
+    # Year-less dates are validated against a leap year (2000) so that 02-29 is
+    # accepted; pinning the year also avoids strptime's ambiguous-default warning.
+    candidates = (birthday, f"2000-{birthday}") if "-" in birthday else ()
+    for candidate in candidates:
+        try:
+            datetime.strptime(candidate, "%Y-%m-%d")
+        except ValueError:
+            continue
+        return birthday
+    raise ValidationError(
+        f"'{value}' is not a valid birthday (use MM-DD or YYYY-MM-DD)."
+    )
+
+
+def normalize_tags(value: str | Iterable[str]) -> tuple[str, ...]:
+    """Return clean, de-duplicated tags as a tuple.
+
+    Accepts either a comma-separated string (``"work, Family, work"``) or any
+    iterable of strings. Tags are trimmed, lower-cased and de-duplicated while
+    preserving first-seen order; blanks are dropped. Tags never fail
+    validation — anything unusable is simply discarded.
+    """
+    raw = value.split(",") if isinstance(value, str) else value
+
+    seen: set[str] = set()
+    tags: list[str] = []
+    for item in raw:
+        tag = item.strip().lower()
+        if tag and tag not in seen:
+            seen.add(tag)
+            tags.append(tag)
+    return tuple(tags)

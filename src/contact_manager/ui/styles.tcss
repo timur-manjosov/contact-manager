@@ -1,7 +1,7 @@
-/* Rosé Pine Moon — Retro CRT Console
-   base #232136  surface #2a273f  highlight #44415a
-   text #e0def4  subtle #908caa
-   gold #f6c177  foam #9ccfd8  iris #c4a7e7  pine #3e8fb0 */
+/* Rosé Pine Moon — quiet chrome, loud content.
+   base #232136  surface #2a273f  overlay #393552
+   text #e0def4  subtle #908caa  muted #6e6a86
+   iris #c4a7e7  foam #9ccfd8  gold #f6c177  love #eb6f92 */
 
 Screen {
     background: #232136;
@@ -18,62 +18,125 @@ Footer {
     color: #908caa;
 }
 
-DataTable {
+#body {
     height: 1fr;
-    margin: 1 2;
+}
+
+/* -- Master: the sidebar list -------------------------------------- */
+
+#contact-list {
+    width: 38;
+    height: 1fr;
+    background: #232136;
+    border-right: solid #393552;
+    padding: 1 1;
+}
+
+ListView {
+    background: #232136;
+}
+
+ListView > ListItem {
+    height: auto;
     padding: 0 1;
+    margin-bottom: 1;
     background: #232136;
     color: #e0def4;
-    border: double #f6c177;
+}
+
+ListView > ListItem.-highlight {
+    background: #2a273f;
+    border-left: solid #393552;
+}
+
+ListView:focus > ListItem.-highlight {
+    background: #393552;
+    border-left: solid #c4a7e7;
+}
+
+/* -- Detail: the contact card -------------------------------------- */
+
+#card {
+    width: 1fr;
+    height: 1fr;
+    padding: 2 4;
+    background: #232136;
+    color: #e0def4;
+}
+
+/* -- Add-contact modal --------------------------------------------- */
+
+AddContactScreen {
+    align: center top;
+}
+
+#dialog {
+    width: 64;
+    max-height: 90%;
+    margin: 2 0;
+    padding: 1 2;
+    background: #2a273f;
+    border: round #c4a7e7;
     border-title-align: center;
 }
 
-DataTable > .datatable--header {
-    background: #2a273f;
+#dialog-title {
+    width: 1fr;
+    margin-bottom: 1;
     color: #e0def4;
+    text-style: bold;
+    text-align: center;
+}
+
+.field-row {
+    height: 3;
+}
+
+.field-label {
+    width: 12;
+    height: 3;
+    content-align: left middle;
+    color: #908caa;
     text-style: bold;
 }
 
-DataTable > .datatable--cursor {
-    background: #f6c177;
-    color: #232136;
-}
-
-DataTable > .datatable--odd-row {
-    background: #2a273f;
-}
-
-DataTable > .datatable--even-row {
-    background: #232136;
-}
-
-#add-bar {
-    height: auto;
-    margin: 0 2 1 2;
-    padding: 1 2;
-    background: #232136;
-    border: double #9ccfd8;
-    border-title-align: center;
-}
-
-#add-bar Input {
+.field-row Input {
     width: 1fr;
-    margin: 0 1;
-    background: #2a273f;
+    background: #232136;
     color: #e0def4;
-    border: round #44415a;
+    border: round #393552;
 }
 
-#add-bar Input:focus {
+.field-row Input:focus {
     border: round #9ccfd8;
 }
 
-#add-bar Button {
-    width: auto;
-    height: 3;
-    margin: 0 1;
-    background: #9ccfd8;
+#form-error {
+    width: 1fr;
+    height: auto;
+    margin: 1 0;
+    color: #eb6f92;
+    text-align: center;
+}
+
+#dialog-buttons {
+    height: auto;
+    align-horizontal: right;
+}
+
+#dialog-buttons Button {
+    margin-left: 2;
+}
+
+#save {
+    background: #c4a7e7;
     color: #232136;
     text-style: bold;
     border: none;
+}
+
+#cancel {
+    background: #2a273f;
+    color: #908caa;
+    border: round #393552;
 }
