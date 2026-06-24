@@ -1,8 +1,20 @@
+# Virtual environments
 .venv/
 venv/
+
+# Python caches & build artifacts
 __pycache__/
 *.pyc
+*.egg-info/
+build/
+dist/
 
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+
+# App data (created at runtime in the working directory)
 contacts.json
 
-contact_manager.egg-info
+# Assistant guidance (local only)
+CLAUDE.md
