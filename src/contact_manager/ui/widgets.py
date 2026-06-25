@@ -7,7 +7,7 @@ messages; they never touch the service, repository or validators.
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 
 from rich.align import Align
 from rich.console import Group, RenderableType
@@ -100,6 +100,87 @@ def _list_secondary(contact: Contact) -> str:
     return _headline(contact) or contact.number or contact.email
 
 
+def _safe_anniversary(year: int, month: int, day: int) -> date:
+    """Return ``date(year, month, day)``, folding Feb 29 onto Mar 1 off years."""
+    try:
+        return date(year, month, day)
+    except ValueError:  # Feb 29 in a non-leap year
+        return date(year, 3, 1)
+
+
+def days_until_birthday(contact: Contact, *, today: date | None = None) -> int | None:
+    """Return whole days until a contact's next birthday, or ``None``.
+
+    ``None`` means the contact has no (parseable) birthday. ``0`` means today.
+    The year is ignored — only the month and day matter — so this works whether
+    the stored value is ``"MM-DD"`` or ``"YYYY-MM-DD"``.
+    """
+    value = contact.birthday
+    if not value:
+        return None
+    try:
+        if len(value) == 5:  # MM-DD
+            month, day = int(value[:2]), int(value[3:5])
+        else:  # YYYY-MM-DD
+            month, day = int(value[5:7]), int(value[8:10])
+    except ValueError:
+        return None
+
+    today = today or date.today()
+    nxt = _safe_anniversary(today.year, month, day)
+    if nxt < today:
+        nxt = _safe_anniversary(today.year + 1, month, day)
+    return (nxt - today).days
+
+
+def birthday_phrase(days: int) -> str:
+    """Render a day count as ``"today"``, ``"tomorrow"`` or ``"in N days"``."""
+    if days == 0:
+        return "today"
+    if days == 1:
+        return "tomorrow"
+    return f"in {days} days"
+
+
+def upcoming_birthdays(
+    contacts: list[Contact], *, within: int = 7, today: date | None = None
+) -> list[tuple[str, int]]:
+    """Return ``(name, days)`` for contacts with a birthday in the next ``within`` days.
+
+    Sorted soonest-first; today counts as ``0``.
+    """
+    soon: list[tuple[str, int]] = []
+    for contact in contacts:
+        days = days_until_birthday(contact, today=today)
+        if days is not None and days <= within:
+            soon.append((contact.name, days))
+    soon.sort(key=lambda item: item[1])
+    return soon
+
+
+def contact_matches(contact: Contact, query: str) -> bool:
+    """Return whether ``contact`` matches a free-text ``query``.
+
+    The match is a case-insensitive substring test across the fields a person
+    is likely to search by — name, nickname, company, title, location, e-mail,
+    number and tags. This is a *presentation* concern (which rows to show), so
+    it lives in the view layer rather than the service.
+    """
+    haystack = " ".join(
+        (
+            contact.name,
+            contact.nickname,
+            contact.company,
+            contact.title,
+            contact.location,
+            contact.email,
+            contact.number,
+            " ".join(contact.tags),
+        )
+    ).lower()
+    return query.lower() in haystack
+
+
 class ContactListItem(ListItem):
     """A single row in the sidebar list, carrying its :class:`Contact`."""
 
@@ -129,6 +210,7 @@ class ContactCard(Static):
 
     contact: reactive[Contact | None] = reactive(None, layout=True)
     total: reactive[int] = reactive(0)
+    filter_active: reactive[bool] = reactive(False)
 
     def render(self) -> RenderableType:
         if self.contact is None:
@@ -160,16 +242,16 @@ class ContactCard(Static):
         meta = Table.grid(padding=(0, 2))
         meta.add_column(style=_SUBTLE, justify="left", width=9)
         meta.add_column(style=_TEXT)
-        birthday = _pretty_birthday(contact.birthday) if contact.birthday else ""
         for label, value in (
             ("PHONE", contact.number),
             ("EMAIL", contact.email),
             ("WEB", contact.website),
             ("LOCATION", contact.location),
-            ("BIRTHDAY", birthday),
         ):
             if value:
                 meta.add_row(label, value)
+        if contact.birthday:
+            meta.add_row("BIRTHDAY", self._birthday_cell(contact))
 
         parts: list[RenderableType] = [header, Text(), meta]
 
@@ -193,6 +275,15 @@ class ContactCard(Static):
 
         return Group(*parts)
 
+    def _birthday_cell(self, contact: Contact) -> Text:
+        """The birthday value, with a gold 🎂 glance when it is within a week."""
+        cell = Text(_pretty_birthday(contact.birthday), style=_TEXT)
+        days = days_until_birthday(contact)
+        if days is not None and days <= 7:
+            cell.append("   ")
+            cell.append(f"🎂 {birthday_phrase(days)}", style=f"bold {_GOLD}")
+        return cell
+
     def _empty_state(self) -> RenderableType:
         if self.total == 0:
             body = Group(
@@ -204,6 +295,16 @@ class ContactCard(Static):
                 Text(),
                 Text(
                     "Press  a  to add your first one.",
+                    justify="center",
+                    style=_SUBTLE,
+                ),
+            )
+        elif self.filter_active:
+            body = Group(
+                Text("No matches", justify="center", style=f"bold {_TEXT}"),
+                Text(),
+                Text(
+                    "Try a different search, or press  esc  to clear.",
                     justify="center",
                     style=_SUBTLE,
                 ),

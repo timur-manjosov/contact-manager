@@ -38,11 +38,15 @@ understood, tested or replaced on its own.
 | 📇 **Master / detail** | A sidebar list on the left, a rich profile card on the right. |
 | 👤 **Rich contacts** | Phone, e-mail, company, title, location, website, birthday, tags and notes. |
 | 🅰️ **Initials avatars** | Each contact gets a stable, colour-coded avatar from their initials. |
-| ⭐ **Favorites** | Pin the people you reach for most with `f`. |
+| 🔎 **Live search** | Press `/` and type to filter the sidebar instantly across name, company, tags and more. |
+| ⭐ **Favorites** | Pin the people you reach for most with `f`, or narrow the list to just them with `F`. |
 | 🏷️ **Tags** | Group contacts with lightweight, free-form labels. |
-| ➕ **Add** | A focused modal form (`a`) creates a contact; validation errors show inline. |
-| 🗑️ **Delete** | Remove the highlighted contact with a single `d` keystroke. |
-| ⌨️ **Keyboard-first** | Browse, add, favorite and delete without ever reaching for the mouse. |
+| ➕ **Add & edit** | Focused modal forms (`a` / `e`) create or update a contact; validation errors show inline. |
+| 🗑️ **Safe delete** | Deleting asks first, and a one-key **undo** (`u`) brings the contact back. |
+| 📋 **Copy fields** | Yank a contact's phone (`y`) or e-mail (`Y`) straight to the clipboard. |
+| 🎂 **Birthday glance** | Upcoming birthdays are flagged on the card and announced on launch. |
+| 🎛️ **Command palette** | `Ctrl+P` to fuzzy-jump to any contact or run actions hands-free. |
+| ⌨️ **Keyboard-first** | Browse, search, add, edit, favorite and delete without ever reaching for the mouse. |
 | ✅ **Validated input** | Names and numbers are required; e-mail, website and birthday are format-checked. |
 | 💾 **Safe persistence** | Changes are written atomically to JSON — no half-saved files. |
 | 🎨 **Themed** | Quiet, intentional styling using the Rosé Pine Moon palette. |
@@ -83,10 +87,17 @@ contacts
 python -m contact_manager
 ```
 
-Browse with `↑` / `↓` — the detail card updates as you move. Press `a` to open
-the new-contact form, fill in the fields (only **Name** and **Phone** are
-required) and press `Enter` to save. Pin a contact with `f` and remove one with
-`d`. Contacts are saved to `contacts.json` in the current working directory.
+Browse with `↑` / `↓` — the detail card updates as you move. Press `/` to search
+and filter the list as you type, or `F` to show only your favorites; press `Esc`
+to clear the filter and return to the list. Press `a` to open the new-contact
+form, fill in the fields (only **Name** and **Phone** are required) and press
+`Enter` to save; press `e` to edit the highlighted contact (its name is locked —
+rename by deleting and re-adding). Pin a contact with `f`. Pressing `d` asks for
+confirmation before removing a contact, and `u` undoes the last deletion. Copy
+the highlighted contact's phone with `y` or e-mail with `Y`, and press `Ctrl+P`
+to fuzzy-jump to anyone by name. Birthdays in the next week are flagged on the
+contact card and announced when you launch the app. Contacts are saved to
+`contacts.json` in the current working directory.
 
 > [!TIP]
 > Point the app at a different data file with the `CONTACTS_FILE` environment
@@ -98,10 +109,16 @@ required) and press `Enter` to save. Pin a contact with `f` and remove one with
 | --- | --- |
 | `↑` / `↓` | Move between contacts |
 | `a` | Add a contact (opens the form) |
+| `e` | Edit the highlighted contact |
+| `/` | Search / filter the list as you type |
 | `f` | Toggle the highlighted contact as a favorite |
-| `d` | Delete the highlighted contact |
-| `Enter` | Save the contact (in the add form) / `Esc` to cancel |
-| `Ctrl` + `p` | Command palette |
+| `F` | Filter to favorites only (toggle) |
+| `d` | Delete the highlighted contact (asks to confirm) |
+| `u` | Undo the last deletion |
+| `y` / `Y` | Copy the highlighted contact's phone / e-mail |
+| `Esc` | Clear the search / filter (or cancel a dialog) |
+| `Enter` | Save the contact (in the add / edit form) |
+| `Ctrl` + `p` | Command palette (jump to a contact, run actions) |
 | `q` | Quit |
 
 ## Architecture
@@ -148,7 +165,7 @@ contact-manager/
 │       ├── models/             # Contact dataclass
 │       ├── repositories/       # ContactRepository + JSON implementation
 │       ├── services/           # ContactService (business logic)
-│       ├── ui/                 # Textual app, widgets, modal screens + styles.tcss
+│       ├── ui/                 # Textual app, widgets, modal screens, command palette + styles.tcss
 │       ├── config/             # Settings resolution
 │       └── utils/              # Field validators
 ├── tests/                      # pytest suite (unit + UI integration)
@@ -190,8 +207,8 @@ pytest tests/test_contact_service.py   # one module
 ## Roadmap
 
 - [x] Per-contact detail view with notes, tags and favorites.
-- [ ] Live search & filtering (by name, company, tag) in the sidebar.
-- [ ] Edit existing contacts (currently delete-and-re-add).
+- [x] Live search & filtering (by name, company, tag) in the sidebar.
+- [x] Edit existing contacts, with confirm-before-delete and one-key undo.
 - [ ] Pluggable SQLite backend behind the existing repository interface.
 - [ ] Import / export (CSV, vCard).
 - [ ] Configurable themes.
